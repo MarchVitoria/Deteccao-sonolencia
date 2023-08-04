@@ -56,7 +56,7 @@ options.be_verbose = True
 # final predictor to predictor.dat.  The input is an XML file that lists the
 # images in the training dataset and also contains the positions of the face
 # parts.
-training_xml_path = os.path.join(faces_folder, "training_with_face_landmarks.xml")
+training_xml_path = os.path.join(faces_folder, "labels_ibug_300W_train.xml")
 dlib.train_shape_predictor(training_xml_path, "predictor.dat", options)
 
 # Now that we have a model we can test it.  dlib.test_shape_predictor()
@@ -69,9 +69,9 @@ print("\nTraining accuracy: {}".format(
 # it's still doing quite good.  Moreover, if you train it on one of the large
 # face landmarking datasets you will obtain state-of-the-art results, as shown
 # in the Kazemi paper.
-#testing_xml_path = os.path.join(faces_folder, "testing_with_face_landmarks.xml")
-#print("Testing accuracy: {}".format(
-#    dlib.test_shape_predictor(testing_xml_path, "predictor.dat")))
+testing_xml_path = os.path.join(faces_folder, "labels_ibug_300W_test.xml")
+print("Testing accuracy: {}".format(
+    dlib.test_shape_predictor(testing_xml_path, "predictor.dat")))
 
 # Now let's use it as you would in a normal application.  First we will load it
 # from disk. We also need to load a face detector to provide the initial
