@@ -4,9 +4,11 @@ import face_detection
 import dlib
 from scipy.spatial import distance
 from imutils import face_utils
+from playsound import playsound
+from threading import Thread
 
 EYE_AR_THRESH = 0.3
-EYE_AR_CONSEC_FRAMES = 48
+EYE_AR_CONSEC_FRAMES = 40
 COUNTER = 0
 ALARM_ON = False
 
@@ -34,6 +36,9 @@ def draw_faces(im, bboxes):
 def draw_points(im, landmarks):
     for landmark in landmarks:
         cv2.circle(im, (landmark.x,landmark.y), radius=2, color=(0, 255, 0), thickness=-1)
+
+def sound_alarm(path):
+	playsound(path, block=False)
 
 # Initialize face detector
 detector = face_detection.build_detector("RetinaNetMobileNetV1", confidence_threshold=.5, nms_iou_threshold=.3)
@@ -91,7 +96,7 @@ while(True):
                     # if the alarm is not on, turn it on
                     if not ALARM_ON:
                         ALARM_ON = True
-                        # TODO sound alarm
+                        sound_alarm("./data/Sound4.wav")
                     # draw an alarm on the frame
                     cv2.putText(frame, "DROWSINESS ALERT!", (10, 30),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
