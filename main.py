@@ -8,6 +8,10 @@ def draw_faces(im, bboxes):
         x0, y0, x1, y1 = [int(_) for _ in bbox]
         cv2.rectangle(im, (x0, y0), (x1, y1), (0, 0, 255), 2)
 
+def draw_points(im, landmarks):
+    for landmark in landmarks:
+        cv2.circle(im, (landmark.x,landmark.y), radius=2, color=(0, 255, 0), thickness=-1)
+
 # Initialize face detector
 detector = face_detection.build_detector("RetinaNetMobileNetV1", confidence_threshold=.5, nms_iou_threshold=.3)
 
@@ -38,10 +42,10 @@ while(True):
                 k, faceBoxRectangle.left(), faceBoxRectangle.top(), faceBoxRectangle.right(), faceBoxRectangle.bottom()))
             
             # Get the landmarks/parts for the face in box d.
+            # returns a single full_object_detection
             shape = predictor(frame, faceBoxRectangle)
-            print("Part 0: {}, Part 1: {} ...".format(shape.part(0),
-                                                    shape.part(1)))
-            # TODO Draw the face landmarks on the screen.
+            draw_points(frame, shape.parts())
+            print("Number of landmarks detected: {}".format(shape.num_parts))
   
     # Display the resulting frame
     cv2.imshow('frame', frame)
