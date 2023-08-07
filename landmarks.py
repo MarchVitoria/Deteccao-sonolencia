@@ -44,15 +44,17 @@ options = dlib.shape_predictor_training_options()
 # have a very small dataset.  In particular, setting the oversampling
 # to a high amount (300) effectively boosts the training set size, so
 # that helps this example.
-options.oversampling_amount = 300
+options.oversampling_amount = 5
+options.oversampling_translation_jitter = 0.1
 # I'm also reducing the capacity of the model by explicitly increasing
 # the regularization (making nu smaller) and by using trees with
 # smaller depths.
 options.nu = 0.1
-options.tree_depth = 2
+options.tree_depth = 4
 options.be_verbose = True
 options.num_threads = 12
 options.cascade_depth = 15
+options.num_test_splits = 50
 
 # dlib.train_shape_predictor() does the actual training.  It will save the
 # final predictor to predictor.dat.  The input is an XML file that lists the
