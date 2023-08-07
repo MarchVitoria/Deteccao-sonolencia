@@ -2,31 +2,8 @@
 import cv2
 import face_detection
 import dlib
-from scipy.spatial import distance
-from imutils import face_utils
-from playsound import playsound
-from threading import Thread
+from moe import mouth_over_eye
 
-EYE_AR_THRESH = 0.3
-EYE_AR_CONSEC_FRAMES = 40
-COUNTER = 0
-ALARM_ON = False
-
-def eye_aspect_ratio(eye):
-    # compute the euclidean distances between the two sets of
-    # vertical eye landmarks (x, y)-coordinates
-    A = distance.euclidean(eye[1], eye[5])
-    B = distance.euclidean(eye[2], eye[4])
-    # compute the euclidean distance between the horizontal
-    # eye landmark (x, y)-coordinates
-    C = distance.euclidean(eye[0], eye[3])
-    # compute the eye aspect ratio
-    ear = (A + B) / (2.0 * C)
-    # return the eye aspect ratio
-
-    print("EAR:", ear)
-    
-    return ear
 
 def draw_faces(im, bboxes):
     for bbox in bboxes:
@@ -37,9 +14,6 @@ def draw_points(im, landmarks):
     for landmark in landmarks:
         cv2.circle(im, (landmark.x,landmark.y), radius=2, color=(0, 255, 0), thickness=-1)
 
-def sound_alarm(path):
-	playsound(path, block=False)
-
 # Initialize face detector
 detector = face_detection.build_detector("RetinaNetMobileNetV1", confidence_threshold=.5, nms_iou_threshold=.3)
 
@@ -48,9 +22,6 @@ predictor = dlib.shape_predictor("predictor.dat")
 
 # define a video capture object
 vid = cv2.VideoCapture(0)
-
-(lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
-(rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
   
 while(True):
       
@@ -76,35 +47,8 @@ while(True):
             shape = predictor(frame, faceBoxRectangle)
             draw_points(frame, shape.parts())
             print("Number of landmarks detected: {}".format(shape.num_parts))
-
-            shape = face_utils.shape_to_np(shape)
-            # extract the left and right eye coordinates, then use the
-            # coordinates to compute the eye aspect ratio for both eyes
-            leftEye = shape[lStart:lEnd]
-            rightEye = shape[rStart:rEnd]
-            leftEAR = eye_aspect_ratio(leftEye)
-            rightEAR = eye_aspect_ratio(rightEye)
-            ear = (leftEAR + rightEAR) / 2.0
-
-            # check to see if the eye aspect ratio is below the blink
-            # threshold, and if so, increment the blink frame counter
-            if ear < EYE_AR_THRESH:
-                COUNTER += 1
-                # if the eyes were closed for a sufficient number of
-                # then sound the alarm
-                if COUNTER >= EYE_AR_CONSEC_FRAMES:
-                    # if the alarm is not on, turn it on
-                    if not ALARM_ON:
-                        ALARM_ON = True
-                        sound_alarm("./data/Sound4.wav")
-                    # draw an alarm on the frame
-                    cv2.putText(frame, "DROWSINESS ALERT!", (10, 30),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-            # otherwise, the eye aspect ratio is not below the blink
-            # threshold, so reset the counter and alarm
-            else:
-                COUNTER = 0
-                ALARM_ON = False
+            
+            mouth_over_eye(shape, frame)
   
     # Display the resulting frame
     cv2.imshow('frame', frame)
