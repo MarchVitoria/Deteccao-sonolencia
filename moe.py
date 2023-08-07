@@ -58,7 +58,7 @@ def mouth_over_eye(shape, frame):
 
     # if the eyes were closed for a sufficient number of
     # then sound the alarm
-    if COUNTER >= EYE_AR_CONSEC_FRAMES | COUNTER_YAWN >= MOUTH_AR_CONSEC_FRAMES:
+    if (COUNTER >= EYE_AR_CONSEC_FRAMES) | (COUNTER_YAWN >= MOUTH_AR_CONSEC_FRAMES):
         
         # if the alarm is not on, turn it on
         if not ALARM_ON:

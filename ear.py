@@ -1,6 +1,6 @@
 from scipy.spatial import distance
 
-EYE_AR_THRESH = 0.3
+EYE_AR_THRESH = 0.25
 EYE_AR_CONSEC_FRAMES = 40
 
 def eye_aspect_ratio(eye):
